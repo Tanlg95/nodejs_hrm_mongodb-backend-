@@ -7,6 +7,7 @@ const position = require('../mongodbOperations/position/positionCRUD');
 const positionFunction = require('../mongodbOperations/position/positionFunction');
 const account = require('../mongodbOperations/account/accountCRUD');
 const accountFunction = require('../mongodbOperations/account/accountFunction');
+const collection = require('../mongodb_collection/collectionCRUD');
 
 
 //------------------------------ employee ----------------------------------//
@@ -162,6 +163,48 @@ router.post('/account/login',(req,res,next) =>{
 router.post('/account/change_password',(req,res,next) =>{
     const body = req.body;
     accountFunction.changePassword(body).then(
+        respone => res.json(respone)
+    ).catch(
+        err => next(err)
+    );
+})
+
+/*---------------------------------------- collection ------------------------------------------- */
+
+// create collection for tblemployees
+
+router.post('/collection/tblemployee',(req,res,next) =>{
+    collection.collection_tblemployee().then(
+        respone => res.json(respone)
+    ).catch(
+        err => next(err)
+    );
+})
+
+// create collection for tblref_position
+
+router.post('/collection/tblrefpos',(req,res,next) =>{
+    collection.collection_tblrefpos().then(
+        respone => res.json(respone)
+    ).catch(
+        err => next(err)
+    );
+})
+
+// create collection for tblemppos
+
+router.post('/collection/tblemppos',(req,res,next) =>{
+    collection.collection_tblemppos().then(
+        respone => res.json(respone)
+    ).catch(
+        err => next(err)
+    );
+})
+
+// create collection for tblaccount
+
+router.post('/collection/tblaccount',(req,res,next) =>{
+    collection.collection_tblaccount().then(
         respone => res.json(respone)
     ).catch(
         err => next(err)
