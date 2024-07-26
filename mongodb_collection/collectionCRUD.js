@@ -15,6 +15,7 @@ async function collection_tblemployee()
     const coll_name = 'tblemployee';
     try {
         const coll_valid = new coll_script(coll_name).get_collection();
+        // create collection
         try{
             await connect_db.createCollection(coll_name,
                 {
@@ -22,6 +23,7 @@ async function collection_tblemployee()
                 }
             )
         }
+        // mod collection
         catch{
             await connect_db.command(
                 {
@@ -30,6 +32,10 @@ async function collection_tblemployee()
                 }
             )
         }
+        // create index
+        await connect_db.collection(coll_name).createIndex({
+            employeeId: 1
+        },{name:"idx_tblemployee", unique: true});
         return {
             statusId: 1,
             description: "tblemployee's collection was created"
@@ -48,6 +54,7 @@ async function collection_tblrefpos()
     const coll_name = 'tblref_position';
     try {
         const coll_valid = new coll_script(coll_name).get_collection();
+        // create collection
         try{
             await connect_db.createCollection(coll_name,
                 {
@@ -55,6 +62,7 @@ async function collection_tblrefpos()
                 }
             )
         }
+        // mod collection
         catch{
             await connect_db.command(
                 {
@@ -63,6 +71,10 @@ async function collection_tblrefpos()
                 }
             )
         }
+        // create index
+        await connect_db.collection(coll_name).createIndex({
+            posId: 1
+        },{name:"idx_tblrefpos", unique: true});
         return {
             statusId: 1,
             description: "tblref_position's collection was created"
@@ -81,6 +93,7 @@ async function collection_tblemppos()
     const coll_name = 'tblemppos';
     try {
         const coll_valid = new coll_script(coll_name).get_collection();
+        // create collection
         try{
             await connect_db.createCollection(coll_name,
                 {
@@ -88,6 +101,7 @@ async function collection_tblemppos()
                 }
             )
         }
+        // mod collection
         catch{
             await connect_db.command(
                 {
@@ -96,6 +110,12 @@ async function collection_tblemppos()
                 }
             )
         }
+        // create index
+        await connect_db.collection(coll_name).createIndex({
+            employeeId: 1,
+            datechange: -1,
+            posId: 1
+        },{name:"idx_tblemppos", unique: true});
         return {
             statusId: 1,
             description: "tblemppos's collection was created"
@@ -114,6 +134,7 @@ async function collection_tblaccount()
     const coll_name = 'tblaccount';
     try {
         const coll_valid = new coll_script(coll_name).get_collection();
+        // create collection
         try{
             await connect_db.createCollection(coll_name,
                 {
@@ -121,6 +142,7 @@ async function collection_tblaccount()
                 }
             )
         }
+        // mode collection
         catch{
             await connect_db.command(
                 {
@@ -129,6 +151,10 @@ async function collection_tblaccount()
                 }
             )
         }
+        // create index
+        await connect_db.collection(coll_name).createIndex({
+            accountId: 1
+        },{name:"idx_tblaccount", unique: true});
         return {
             statusId: 1,
             description: "tblaccount's collection was created"
