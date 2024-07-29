@@ -1,17 +1,19 @@
 require('dotenv').config();
 const token = require('../tokenOperations/createToken');
 const jwt = require('jsonwebtoken');
+const statusClass = require('../support/status');
+const status = new statusClass();
 
 const newToken = function(atoken_old, ftoken)
 {
     try{
-        if(!atoken_old || !ftoken) throw new Error('please provide token!!!');
+        if(!atoken_old || !ftoken) throw status.errorStatus(5);
         // check old access token and old refresh token
         const check_atoken_old = jwt.verify(atoken_old, process.env.MONGODB_ACCESSTOKEN,{
             ignoreExpiration: true
         });
         const check_ftoken_old = jwt.verify(ftoken,process.env.MONGODB_REFRESHTOKEN);
-        if(!check_atoken_old  || !check_ftoken_old) throw new Error('error!!! the old token is incorrect')
+        if(!check_atoken_old  || !check_ftoken_old) throw status.errorStatus(6);
         // return access token and refresh token
         const payload = {
             accountId: check_ftoken_old.accountId,

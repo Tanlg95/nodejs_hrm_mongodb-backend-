@@ -1,6 +1,8 @@
 const mongodb = require('mongodb').MongoClient;
 const mongodb_config = require('../../mongodbConfigure/mongodbConfig');
 const mongodb_objectId = require('mongodb').ObjectId;
+const statusClass = require('../../support/status');
+const status = new statusClass();
 const mongodb_connection_string = new mongodb_config();
 const db_connection = 'hrm';
 const coll_connection = 'tblemppos';
@@ -25,6 +27,9 @@ async function get_position_employee(body)
         return pool;
    } catch (error) {
         throw error;
+   } finally
+   {
+       connection.close();
    }
 };
 
@@ -35,7 +40,7 @@ async function insert_position_employee(body)
     const connection = await mongodb.connect(mongodb_connection_string.getConnectString());
     const connect_db = connection.db(db_connection);
    try {
-        if(!(body.body instanceof Array)) throw new Error('body must be an array!!!');
+        if(!(body.body instanceof Array)) throw status.errorStatus(1);
         // get employee list => project: employeeId: 1
         const get_tblemployee = await connect_db.collection('tblemployee').find().project({employeeId: 1,_id:0}).toArray();
         // get position list => project: posId: 1
@@ -58,9 +63,15 @@ async function insert_position_employee(body)
             })
         );
         const pool = await connect_db.collection(coll_connection).insertMany(position_list_insert);
-        return pool;
+        return {
+            statusId: status.operationStatus(104),
+            totalRowInserted: pool.insertedCount
+        };
    } catch (error) {
         throw error;
+   } finally
+   {
+       connection.close();
    }
 }
 
@@ -71,7 +82,9 @@ async function update_position_employee(body)
     const connection = await mongodb.connect(mongodb_connection_string.getConnectString());
     const connect_db = connection.db(db_connection);
    try {
-        if(!(body.body instanceof Array)) throw new Error('body must be an array!!!');
+        // The total number of rows modified 
+        let totalRowAffected = 0;
+        if(!(body.body instanceof Array)) throw status.errorStatus(1);
         // get position list => project: posId: 1
         const get_tblref_pos = await connect_db.collection('tblref_position').find().project({posId: 1, _id: 0}).toArray();
         // check valid input
@@ -93,7 +106,7 @@ async function update_position_employee(body)
         // update positions of employees
         for(let ele of position_list_update)
         {
-            await connect_db.collection(coll_connection).updateOne(
+            const pool = await connect_db.collection(coll_connection).updateOne(
                 {_id: ele._id},
                 {
                     $set:{
@@ -103,9 +116,18 @@ async function update_position_employee(body)
                     } 
                 }
             );
+            totalRowAffected += ((pool.modifiedCount === 1) ? 1 : 0);
+        }
+        return {
+            statusId: status.operationStatus(104),
+            totalRow: (body.body).length,
+            totalRowModified: totalRowAffected
         }
    } catch (error) {
         throw error;
+   } finally
+   {
+       connection.close();
    }
 }
 
@@ -116,7 +138,7 @@ async function delete_position_employee(body)
     const connection = await mongodb.connect(mongodb_connection_string.getConnectString());
     const connect_db = connection.db(db_connection);
    try {
-        if(!(body.body instanceof Array)) throw new Error('body must be an array!!!');
+        if(!(body.body instanceof Array)) throw status.errorStatus(1);
         const position_list_delete = [];
         for(let ele of body.body)
         {
@@ -128,9 +150,16 @@ async function delete_position_employee(body)
                 _id:{$in: position_list_delete}
             }
         );
-        return pool;
+        return {
+            statusId: status.operationStatus(104),
+            totalRow: (body.body).length,
+            totalRowDeleted: pool.deletedCount
+        };
    } catch (error) {
         throw error;
+   } finally
+   {
+       connection.close();
    }
 }
 

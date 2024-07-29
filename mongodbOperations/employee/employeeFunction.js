@@ -28,6 +28,9 @@ async function get_total_employee(todate)
         return pool;
     } catch (error) {
         throw error;
+    } finally
+    {
+        connection.close();
     }
 };
 

@@ -44,9 +44,11 @@ async function get_max_position(body)
             ]
         ).toArray();
         return pool;
-        
     } catch (error) {
         throw error;
+    } finally
+    {
+        connection.close();
     }
 }
 

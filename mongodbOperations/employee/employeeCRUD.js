@@ -2,6 +2,8 @@ const mongodb = require('mongodb').MongoClient;
 const mongodb_config = require('../../mongodbConfigure/mongodbConfig');
 const mongodb_objectId = require('mongodb').ObjectId;
 const mongodb_connection_string = new mongodb_config();
+const statusClass = require('../../support/status');
+const status = new statusClass();
 const db_connection = 'hrm';
 const coll_connection = 'tblemployee';
 // get employee information
@@ -25,6 +27,9 @@ async function get_employee_info(body)
         return pool;
     } catch (error) {
         throw error;
+    } finally
+    {
+        connection.close();
     }
 }
 
@@ -35,7 +40,7 @@ async function insert_employee_info(body)
     const connection = await mongodb.connect(mongodb_connection_string.getConnectString());
     const connect_db = connection.db(db_connection);
     try {
-        if(!(body.body instanceof Array)) throw new Error('body must be an array!!!');
+        if(!(body.body instanceof Array)) throw status.errorStatus(1);
         const employee_list_insert = [];
         for(let ele of body.body)
         {
@@ -50,9 +55,15 @@ async function insert_employee_info(body)
             )
         }
         const pool = await connect_db.collection(coll_connection).insertMany(employee_list_insert);
-        return pool;
+        return {
+            statusId: status.operationStatus(104),
+            totalRowInserted: pool.insertedCount
+        };
     } catch (error) {
         throw error;   
+    } finally
+    {
+        connection.close();
     }
 }
 
@@ -82,9 +93,15 @@ async function update_employee_info(body)
                 }  
             }
         );
-        return pool;
+        return {
+            statusId: status.operationStatus(104),
+            totalRowModified: pool.modifiedCount
+        };
     } catch (error) {
         throw error;   
+    } finally
+    {
+        connection.close();
     }
 }
 
@@ -95,21 +112,27 @@ async function delete_employee_info(body)
     const connection = await mongodb.connect(mongodb_connection_string.getConnectString());
     const connect_db = connection.db(db_connection); 
     try {
-        if(!(body.body instanceof Array)) throw new Error('body must be an array!!!');
+        if(!(body.body instanceof Array)) throw status.errorStatus(1);
         const employee_list_delete = [];
         for(let ele of body.body)
         {
             employee_list_delete.push(new mongodb_objectId(ele._id));
         }
-        console.log(employee_list_delete);
+        //console.log(employee_list_delete);
         const pool = await connect_db.collection(coll_connection).deleteMany(
             {
                 _id:{$in: employee_list_delete}
             }
         );
-        return pool;
+        return {
+            statusId: status.operationStatus(104),
+            totalRowDeleted: pool.deletedCount
+        };
     } catch (error) {
         throw error;
+    } finally
+    {
+        connection.close();
     }
 }
 

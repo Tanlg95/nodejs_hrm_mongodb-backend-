@@ -1,11 +1,13 @@
 require('dotenv').config();
 const jwt = require('jsonwebtoken');
+const statusClass = require('../support/status');
+const status = new statusClass();
 
 const createToken = function(payload,opt){
 
     // access token => opt: 1
     // refresh token => opt: 2
-    if(!([1,2].includes(opt))) throw new Error('opt must be in (1,2)');
+    if(!([1,2].includes(opt))) throw status.errorStatus(7,[1,2])
     try {
         let token = undefined;
         switch(opt)

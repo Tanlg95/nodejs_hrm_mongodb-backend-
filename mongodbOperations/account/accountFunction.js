@@ -4,6 +4,8 @@ const renewToken = require('../../tokenOperations/renewToken');
 const bcrypt = require('bcrypt');
 const mongodb_config = require('../../mongodbConfigure/mongodbConfig');
 const mongodb_objectId = require('mongodb').ObjectId;
+const statusClass = require('../../support/status');
+const status = new statusClass();
 const mongodb_connection_string = new mongodb_config();
 const db_connection = 'hrm';
 const coll_connection = 'tblaccount';
@@ -20,17 +22,20 @@ async function login(body)
         const get_password = await connect_db.collection(coll_connection).find({_id: new mongodb_objectId(body._id)}).toArray();
         // compare passwords
         const check_password = bcrypt.compareSync(body.pwd,get_password[0].pwd);
-        if(!check_password) throw new Error('incorrect password or keyid !!!');
+        if(!check_password) throw status.errorStatus(3);
         // return employee's information
         return {
-            statusId: 1,
+            statusId: status.operationStatus(104),
             accountId: get_password[0].accountId,
-            statusName: "logged in successfully!!!",
+            statusName: status.operationStatus(102),
             atoken: get_password[0].atoken
         };
     } catch (error) {
         throw error;
-    } 
+    }  finally
+    {
+        connection.close();
+    }
 };
 
 
@@ -45,7 +50,7 @@ async function changePassword(body)
         const get_password = await connect_db.collection(coll_connection).find({_id: new mongodb_objectId(body._id)}).toArray();
         // compare passwords
         const check_password = bcrypt.compareSync(body.pwd,get_password[0].pwd);
-        if(!check_password) throw new Error('incorrect password or keyid !!!');
+        if(!check_password) throw status.errorStatus(3);
         // create a new password
         const new_password = bcrypt.hashSync(body.new_password, bcrypt.genSaltSync(10));
         // update password
@@ -57,9 +62,15 @@ async function changePassword(body)
                 }
             }
         );
-        return pool;
+        return {
+            statusId: status.operationStatus(104),
+            statusName: (pool.modifiedCount === 1) ? status.operationStatus(103) : ''
+        };
     } catch (error) {
         throw error;
+    } finally
+    {
+        connection.close();
     }
 }
 
