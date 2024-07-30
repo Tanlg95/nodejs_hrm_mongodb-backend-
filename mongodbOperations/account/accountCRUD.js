@@ -6,6 +6,7 @@ const mongodb_config = require('../../mongodbConfigure/mongodbConfig');
 const mongodb_objectId = require('mongodb').ObjectId;
 const statusClass = require('../../support/status');
 const status = new statusClass();
+const valid = require('../../support/valid');
 const mongodb_connection_string = new mongodb_config();
 const db_connection = 'hrm';
 const coll_connection = 'tblaccount';
@@ -25,7 +26,7 @@ async function create_account(body)
                 const payloadForToken = {
                     accountId: val.accountId,
                     accountName: val.accountName,
-                    email: (!val.email) ? null : val.email
+                    email: (!val.email) ? null : valid.validEmail(val.email)
                 };
                 const atoken = createToken(payloadForToken,1),
                       ftoken = createToken(payloadForToken,2);
@@ -33,7 +34,7 @@ async function create_account(body)
                     accountId: val.accountId,
                     accountName: val.accountName,
                     email: (!val.email) ? null : val.email,
-                    pwd: bcrypt.hashSync(val.pwd, bcrypt.genSaltSync(10)), // create encrypt password
+                    pwd: bcrypt.hashSync(valid.validPassword(val.pwd), bcrypt.genSaltSync(10)), // create encrypt password
                     atoken: atoken,
                     ftoken: ftoken,
                     note: (!val.note) ? null : val.note
@@ -69,7 +70,7 @@ async function update_account(body)
                 {
                     $set:{
                         accountName: ele.accountName,
-                        email: (!ele.email)? null : ele.email,
+                        email: (!ele.email)? null : valid.validEmail(ele.email),
                         note: (!ele.note)? null : ele.note
                     }
                 }

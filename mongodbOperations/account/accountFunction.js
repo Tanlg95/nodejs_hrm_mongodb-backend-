@@ -6,6 +6,7 @@ const mongodb_config = require('../../mongodbConfigure/mongodbConfig');
 const mongodb_objectId = require('mongodb').ObjectId;
 const statusClass = require('../../support/status');
 const status = new statusClass();
+const valid = require('../../support/valid');
 const mongodb_connection_string = new mongodb_config();
 const db_connection = 'hrm';
 const coll_connection = 'tblaccount';
@@ -52,7 +53,7 @@ async function changePassword(body)
         const check_password = bcrypt.compareSync(body.pwd,get_password[0].pwd);
         if(!check_password) throw status.errorStatus(3);
         // create a new password
-        const new_password = bcrypt.hashSync(body.new_password, bcrypt.genSaltSync(10));
+        const new_password = bcrypt.hashSync(valid(body.new_password), bcrypt.genSaltSync(10));
         // update password
         const pool = await connect_db.collection(coll_connection).updateOne(
             {_id: new mongodb_objectId(body._id)},

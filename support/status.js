@@ -7,6 +7,8 @@
     --- 5: please provide a token
     --- 6: incorrect old access token or refresh token
     --- 7: opt must be in (...)
+    --- 8: incorrect email format
+    --- 9: incorrect password format
 
     --- 100: collection has been created
     --- 101: collection has been modified
@@ -23,7 +25,7 @@ class status {
 
     errorStatus(errCode, arrOpt)
     {
-        const listErrCode = [1,2,3,4,5,6,7];
+        const listErrCode = [1,2,3,4,5,6,7,8,9];
         if(!(listErrCode.includes(errCode))) throw new Error(`incorrect opt!!! must be in (${listErrCode})`);
         const optStatus = (arrOpt instanceof Array) ? arrOpt : '';
         let errOutput = new Error(`undefined error !!!`);
@@ -50,6 +52,12 @@ class status {
             case 7:
                 errOutput = new Error(`opt must be in (${optStatus}) !!!`);
                 break;
+            case 8:
+                errOutput = new Error(`Incorrect email format !!!`);
+                break; 
+            case 9:
+                errOutput = new Error(`Incorrect password format !!!`);
+                break;    
         }
         return errOutput;
     }
