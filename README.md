@@ -25,7 +25,7 @@
       	4.folder mongodb_script: Contains hrm backup database.
         	5.router: Contains all API router ( CRUD for each module ).
 	 	6.tokenOperations: Contains CRUD for json web token ( create token, auth token, renew token ).
-   		7.file index: Contains server configuration information.
+   		7.file index.js: Contains server configuration information.
 
 ♻️How to use:
 
