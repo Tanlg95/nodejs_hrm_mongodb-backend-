@@ -35,7 +35,7 @@
       	⚫️Step 4: test server use index.js ( run syntax "nodemon" or "npx nodemon").
 		⚫️Step 5: restore database from folder mongodb_script ( use hrm folder inside ), you can restore database with mongorestore CMD
   			  if you can not restore database with mongoretore you can use API collection in folder router/router.js and run those APIs with postman to auto creating collection.
-       	⚫️Step 5: done !!!
+       	⚫️Step 6: done !!!
   		
 📠If you have any questions about my project, you can contact me 🧔🏻‍♂️
 
